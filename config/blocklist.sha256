@@ -1,0 +1,3 @@
+# SHA-256 blocklist: "<64 hex> [comment]" per line.
+# Generate entries with: pathguardctl hash <file>
+# A blocklisted hash is denied even if it also appears in the allowlist.

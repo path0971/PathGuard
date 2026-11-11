@@ -1,0 +1,38 @@
+[Unit]
+Description=PathGuard endpoint protection agent
+After=local-fs.target
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStartPre=@PREFIX@/sbin/pathguardd --check --config /etc/pathguard/pathguard.conf
+ExecStart=@PREFIX@/sbin/pathguardd --config /etc/pathguard/pathguard.conf
+ExecReload=/bin/kill -HUP $MAINPID
+# Re-register the marks after any exit; the gap is recorded as protection_gap.
+Restart=always
+RestartSec=1
+WatchdogSec=15
+TimeoutStopSec=10
+KillMode=mixed
+
+RuntimeDirectory=pathguard
+RuntimeDirectoryMode=0755
+StateDirectory=pathguard
+StateDirectoryMode=0700
+LogsDirectory=pathguard
+LogsDirectoryMode=0750
+UMask=0077
+LimitNOFILE=65536
+OOMScoreAdjust=-900
+
+NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_SYS_ADMIN CAP_SETUID CAP_SETGID CAP_DAC_OVERRIDE CAP_DAC_READ_SEARCH CAP_FOWNER CAP_CHOWN CAP_KILL
+# Intentionally no mount-namespace sandboxing (ProtectSystem=, PrivateTmp=,
+# ReadWritePaths=, ...): with mark_type = mount, a mark placed inside a private
+# mount namespace would only watch the service's copy of the mount, not the
+# one other processes use. See README "systemd".
+
+[Install]
+WantedBy=multi-user.target

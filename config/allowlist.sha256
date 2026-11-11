@@ -1,0 +1,3 @@
+# SHA-256 allowlist (exceptions): "<64 hex> [comment]" per line.
+# An allowlisted hash is allowed even if a YARA rule matches (false positives),
+# but never overrides the blocklist.
